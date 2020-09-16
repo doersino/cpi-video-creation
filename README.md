@@ -1,3 +1,9 @@
+# cpi-video-creation
+
+TODO make it proper
+
+TODO install imagemagick, install ffmpeg (?), typical venv thingy
+
 font stuff:
 
 moviepy uses imagemagick for text rendering. imagemagick comes with its own list of fonts that references the fonts preinstalled on every mac, but not custom ones. this list can be seen with
