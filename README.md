@@ -1,6 +1,10 @@
 # cpi-video-creation
 
-TODO make it proper
+TODO make it proper, link to playlist
+
+TODO note that cc images from cc website
+
+TODO note on archive of py files corresponding ot videos
 
 TODO install imagemagick, install ffmpeg (?), typical venv thingy
 

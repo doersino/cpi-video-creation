@@ -128,5 +128,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+################################################################################
+
 bin/
 pyvenv.cfg
+
+temp/*
+result.mp4
+result-thumbnail.png
