@@ -2,11 +2,58 @@
 # CONFIG #
 ##########
 
-VIDEO_WIDTH = int(3840/2)
-VIDEO_HEIGHT = int(VIDEO_WIDTH / 2.33)
+NO = "001"
+LOCATION = "Box Elder County"
+LOCATION_SUBTITLE = "Utah, USA"
 
+ENDCARD_HERO = """
+That's all center pivot irrigation fields located in Box Elder County, Utah, USA
+— at least the {image_count} that were discernible at the time the aerial
+imagery was captured.
+"""
+
+ENDCARD_REST = """
+The soundtrack was a variant of "Grey Shadow" by Adrián Berenguer where parts of
+the work were repeated to reach the required length. The original is available
+at adrianberenguer.bandcamp.com/track/grey-shadow, it has been used in
+accordance with its CC BY-NC-SA license, see
+creativecommons.org/licenses/by-nc-sa/3.0/. As per the conditions of the
+license, this video is licensed under the same terms.
+
+The aerial imagery is courtesy of Google Maps. It has been downloaded with
+ærialbot, see github.com/doersino/aerialbot, then cropped using Crop Cricles,
+see github.com/doersino/cropcircles, and finally assembled into a video using
+custom MoviePy-based tooling available at
+github.com/doersino/cpi-video-creation. The title screen background is the
+average of all images shown.
+
+The typeface used for the title screen, the coordinates of each field, and the
+link in the bottom left here is Optician Sans, see optician-sans.com. This
+colophon is set in Source Serif Pro, see
+github.com/adobe-fonts/source-serif-pro. Both typefaces are licensed under the
+SIL Open Font License, see opensource.org/licenses/OFL-1.1. Any kerning issues
+you may have noticed are caused by the video production process, the typefaces
+themselves are fine.
+"""
+
+LICENSE = ["by", "nc", "sa"]
+
+IMAGES_DIR = "/Users/noah/Downloads/box-elder-county"
+IMAGES_LIMIT = 5  # handy for testing, set to None otherwise
+
+VIDEO_WIDTH = 3840 / 2
+VIDEO_HEIGHT = VIDEO_WIDTH / 2.33  # TODO determine based on imgs?
+
+MUSIC_FILE = "song.wav"
 BPM = 100
 TIME_BEFORE_FIRST_BEAT = 0.85
+
+VIDEO_PATH = "test.mp4"
+FPS = 24
+
+THUMBNAIL_WIDTH = 1920
+THUMBNAIL_HEIGHT = 1080
+THUMBNAIL_PATH = "test_thumb.png"
 
 
 ################################################################################
@@ -20,10 +67,14 @@ from moviepy.editor import *
 
 ################################################################################
 
+# TODO make sure these are even?
 VIDEO_WIDTH = int(VIDEO_WIDTH)
 VIDEO_HEIGHT = int(VIDEO_HEIGHT)
 
 MARGIN = int(VIDEO_HEIGHT / 14)
+
+ENDCARD_HERO = "\n\n".join(map(lambda l: " ".join(l.strip().split("\n")), ENDCARD_HERO.split("\n\n")))
+ENDCARD_REST = "\n\n".join(map(lambda l: " ".join(l.strip().split("\n")), ENDCARD_REST.split("\n\n")))
 
 
 def compute_nonmoving_texts_size(clips):
@@ -53,8 +104,8 @@ def trim_text_clip(clip):
 def draw_logo(no):
     logo_font_size = MARGIN * 1.2
     cpi = TextClip("Center\nPivot\nIrrigation",fontsize=logo_font_size,color='white',font='OpticianSans',align='west',interline=-logo_font_size*0.3)
-    no = TextClip("#" + no,fontsize=logo_font_size,color='lightgray',font='OpticianSans',align='west')
-    no = no.set_position((0,logo_font_size*1.86))
+    no = TextClip("#" + no,fontsize=logo_font_size,color='white',font='OpticianSans',align='west')
+    no = no.set_position((0,logo_font_size*1.86)).set_opacity(0.85)
     logo = [cpi, no]
     logo = CompositeVideoClip(logo, size=compute_nonmoving_texts_size(logo))
     return trim_text_clip(logo)
@@ -62,48 +113,65 @@ def draw_logo(no):
 def draw_title(main, sub):
     title_font_size = MARGIN * 2
     main = TextClip(main,fontsize=title_font_size,color='white',font='OpticianSans',align='center',interline=-title_font_size*0.3)
-    sub = TextClip(sub,fontsize=title_font_size*0.67,color='white',font='OpticianSans',align='center')
-    sub = sub.set_position((main.size[0]/2-sub.size[0]/2,title_font_size))
-    title = [main, sub]
+    title = [main]
+    if sub:
+        sub = TextClip(sub,fontsize=title_font_size*0.67,color='white',font='OpticianSans',align='center')
+        sub = sub.set_position((main.size[0]/2-sub.size[0]/2,title_font_size))
+        title = [main, sub]
     title = CompositeVideoClip(title, size=compute_nonmoving_texts_size(title))
     return trim_text_clip(title)
 
-# TODO pretty-print latlon from filenames
-
 # font size is relative to height for thumbnail purposes!
 
-cpi_field_images = glob.glob("test/*.jpg")
+def generate_thumbnail(background, logo, title):
+    vid_aspect = VIDEO_WIDTH / VIDEO_HEIGHT
+    thumb_aspect = THUMBNAIL_WIDTH / THUMBNAIL_HEIGHT
+
+    thumbnail = None
+    # TODO check if these work for all situations
+    if (vid_aspect > thumb_aspect):  # video wider
+        thumbnail = background.resize(height=THUMBNAIL_HEIGHT).crop(x1=(THUMBNAIL_HEIGHT/VIDEO_HEIGHT)*VIDEO_WIDTH/2-THUMBNAIL_WIDTH/2, width=THUMBNAIL_WIDTH)
+    else:
+        thumbnail = background.resize(width=THUMBNAIL_WIDTH).crop(y1=(THUMBNAIL_WIDTH/VIDEO_WIDTH)*VIDEO_HEIGHT/2-THUMBNAIL_HEIGHT/2, height=THUMBNAIL_HEIGHT)
+
+    logo = logo.set_position((THUMBNAIL_MARGIN, THUMBNAIL_HEIGHT-MARGIN-logo.size[1]))
+    logo = logo.set_position((THUMBNAIL_MARGIN, THUMBNAIL_HEIGHT-MARGIN-logo.size[1]))
+    CompositeVideoClip([thumbnail, logo, title]).save_frame(THUMBNAIL_PATH)
+
+cpi_field_images = glob.glob(IMAGES_DIR + "/*.jpg")
 cpi_field_images.sort()
-cpi_field_clips = [ImageClip(f).set_duration(60/BPM).resize((VIDEO_WIDTH, VIDEO_HEIGHT)) for f in cpi_field_images]
-# TODO imagesequenceclip?
+if (IMAGES_LIMIT):
+    cpi_field_images = cpi_field_images[:IMAGES_LIMIT]
+
+cpi_field_clips = [ImageClip(f).set_duration(60 / BPM).resize((VIDEO_WIDTH, VIDEO_HEIGHT)) for f in cpi_field_images]
+
 cpi_fields = concatenate_videoclips(cpi_field_clips)
-fps = 1 / (60/BPM)
+fps = BPM / 60
 nframes = cpi_fields.duration*fps # total number of frames used
 total_image = sum(cpi_fields.iter_frames(fps,dtype=float,logger='bar'))
 average_image = ImageClip(total_image/ nframes)
-average_image.save_frame("average_test3.png")
+#average_image.save_frame("average_test3.png")
 
-logo = draw_logo("001")
-logo = logo.set_position((MARGIN,VIDEO_HEIGHT-MARGIN-logo.size[1]))
-title = draw_title("Box Elder County", "Utah, USA")
-#title = title.set_position(lambda t: ('center', 2*MARGIN+10*t))
+logo = draw_logo(NO)
+logo = logo.set_position((MARGIN, VIDEO_HEIGHT-MARGIN-logo.size[1]))
+title = draw_title(LOCATION, LOCATION_SUBTITLE)
 title = title.set_position(('center', 5*MARGIN))
 
 titles = [average_image, logo, title]
+generate_thumbnail(average_image, logo, title)
 titles = [clip.set_duration(5) for clip in titles]
 
 titles[1] = titles[1].set_start(1.5,change_end=False)
 titles[2] = titles[2].set_start(2.5,change_end=False)
 
-snd = AudioFileClip("test.wav")
-snd2 = AudioFileClip("test2.wav")
-titles[1] = titles[1].set_audio(snd.set_start(1.49))  # no idea why the delay has to be set here too
-titles[2] = titles[2].set_audio(snd2.set_start(2.49))
+snd = AudioFileClip("test.wav").set_start(1.49)  # no idea why the delay has to be set here too
+snd2 = AudioFileClip("test2.wav").set_start(2.49)
+titles[1] = titles[1].set_audio(snd)
+titles[2] = titles[2].set_audio(snd2)
 
 titles = CompositeVideoClip(titles)
 
-titles = titles.fadein(1)
-titles = titles.fadeout(1)
+titles = titles.fadein(1).fadeout(1)
 
 # TODO same but different for thumbnail
 
@@ -111,7 +179,7 @@ titles = titles.fadeout(1)
 
 black = ColorClip((VIDEO_WIDTH,VIDEO_HEIGHT), color=(0, 0, 0))
 
-song = AudioFileClip("song.wav").set_start(0)
+song = AudioFileClip(MUSIC_FILE).set_start(0)
 
 def overlay_geocoords(filename, imageclip):
 
@@ -142,7 +210,7 @@ def overlay_geocoords(filename, imageclip):
     coords_font_size = MARGIN * 0.4
     coords = TextClip(fancy(coords[0], coords[1]),fontsize=coords_font_size,color='white',font='OpticianSans',align='west')
     coords = trim_text_clip(coords)
-    coords = coords.set_position((VIDEO_WIDTH-MARGIN*0.5-coords.size[0],VIDEO_HEIGHT-MARGIN*0.5-coords.size[1])).set_duration(60/BPM)
+    coords = coords.set_position((VIDEO_WIDTH-MARGIN-coords.size[0],VIDEO_HEIGHT-MARGIN-coords.size[1])).set_duration(60/BPM)
     return CompositeVideoClip([imageclip, coords])
 
 fields = [overlay_geocoords(f, clip) for f, clip in zip(cpi_field_images, cpi_field_clips)]
@@ -158,38 +226,49 @@ last_image = concatenate_videoclips([last_image, last_image, last_image, last_im
 
 end_font_size = MARGIN*0.3
 
-intro = TextClip("That's all center pivot irrigation fields located in Box Elder County, Utah, USA — at least the 346 that were discernible at the time the aerial imagery was captured.",fontsize=end_font_size * 1.3,color='white',font='SourceSerifPro',align='west',size=(VIDEO_WIDTH*0.55,None),method='caption')
+gray = ColorClip((VIDEO_WIDTH,VIDEO_HEIGHT), color=(16, 16, 16))
+
+intro = TextClip(ENDCARD_HERO.format(image_count=len(cpi_field_images)),fontsize=end_font_size * 1.3,color='white',font='SourceSerifPro',align='west',size=(VIDEO_WIDTH*0.55,None),method='caption')
 intro = trim_text_clip(intro)
 
-text = TextClip("""
-The soundtrack was a variant of "Grey Shadow" by Adrián Berenguer where parts of the work were repeated to reach the required length. The original is available at adrianberenguer.bandcamp.com/track/grey-shadow, it has been used in accordance with its CC BY-NC-SA license, see creativecommons.org/licenses/by-nc-sa/3.0/. As per the conditions of the license, this video is licensed under the same terms.
-
-The aerial imagery is courtesy of Google Maps. It has been downloaded using ærialbot, see github.com/doersino/aerialbot, then cropped using Crop Cricles, see github.com/doersino/cropcircles, and finally assembled into a video using custom MoviePy-based tooling available at github.com/doersino/cpi-video-creation. The title screen background is the average of all images shown.
-
-The typeface used for the title screen, the coordinates of each field, and the link in the bottom left here is Optician Sans, see optician-sans.com. This colophon is set in Source Serif Pro, see github.com/adobe-fonts/source-serif-pro. Both typefaces are licensed under the SIL Open Font License, see opensource.org/licenses/OFL-1.1. Any kerning issues you may have noticed are caused by the video production process, the typefaces themselves are fine.
-    """,
-    fontsize=end_font_size,color='white',font='SourceSerifPro',align='west',size=(VIDEO_WIDTH*0.55,None),method='caption')
+text = TextClip(ENDCARD_REST, fontsize=end_font_size,color='white',font='SourceSerifPro',align='west',size=(VIDEO_WIDTH*0.55,None),method='caption')
 text = trim_text_clip(text)
 
 intro = intro.set_position((MARGIN,VIDEO_HEIGHT-MARGIN-text.size[1]-intro.size[1]-MARGIN))
 text = text.set_position((MARGIN,VIDEO_HEIGHT-MARGIN-text.size[1]))
 
-link = TextClip("noahdoersing.com",fontsize=end_font_size * 1.25,color='white',font='OpticianSans',align='west')
+link = TextClip("noahdoersing.com",fontsize=end_font_size * 1.4,color='white',font='OpticianSans',align='west')
 link = trim_text_clip(link)
 link = link.set_position((VIDEO_WIDTH-MARGIN-link.size[0],VIDEO_HEIGHT-MARGIN-link.size[1]))
 
-gray = ColorClip((VIDEO_WIDTH,VIDEO_HEIGHT), color=(16, 16, 16))
+license_codes = ["cc", *LICENSE]
+license_icons = list(map(lambda l: ImageClip("cc/" + l + ".png"), license_codes))
+for i in range(len(license_icons)):
+    icon = license_icons[i]
+    icon = icon.resize((end_font_size*1.4, end_font_size*1.4))
+    icon = icon.set_position((i*1.8*end_font_size, 0))
+    license_icons[i] = icon
+license_icons = CompositeVideoClip(license_icons, size=compute_nonmoving_texts_size(license_icons))  # TODO rename that function
+license_icons = license_icons.set_position((VIDEO_WIDTH-MARGIN-license_icons.size[0],VIDEO_HEIGHT-MARGIN-link.size[1]-2*license_icons.size[1]))
 
-endcard = [gray, logo.set_position((MARGIN,MARGIN)), intro, text, link]
+endcard = [gray, average_image.set_opacity(0.1), logo.set_position((MARGIN,MARGIN)), intro, text, link, license_icons]
 endcard = [clip.set_duration(20) for clip in endcard]
 endcard = CompositeVideoClip(endcard)
 endcard = endcard.fadein(1).fadeout(1)
 
 ################################################################################
 
-video = concatenate_videoclips([black.set_duration(1), titles, black.set_duration(0.5), fields, last_image, endcard, black.set_duration(1)])
+video = concatenate_videoclips([
+    black.set_duration(1),
+    titles,
+    black.set_duration(0.5),
+    fields,
+    last_image,
+    endcard,
+    black.set_duration(1)
+    ])
 
-video.write_videofile("test.mp4",fps=24)
+video.write_videofile(VIDEO_PATH, fps=FPS)
 
 
 
@@ -228,3 +307,5 @@ average_image.save_frame("average_test2.png")
 
 #print(TextClip.list('font'))
 #clip = VideoFileClip("/Users/noah/Downloads/box-elder-county/out.mp4").subclip(0,2)
+
+#title = title.set_position(lambda t: ('center', 2*MARGIN+10*t))
