@@ -2,6 +2,61 @@
 # CONFIG #
 ##########
 
+NO = "001"
+LOCATION = "Prologue"
+LOCATION_SUBTITLE = ""
+TITLECARD_DURATION = 5
+
+ENDCARD_INTRO = """
+This has been a selection of {image_count} center pivot irrigation fields
+located around the world – there will be follow-up videos with a more regional
+focus, sometimes exhaustively covering all fields in an area. Stay tuned.
+"""
+ENDCARD_REST = """
+The soundtrack was a variant of "Continent" by Adrián Berenguer, slowed down
+from 149 to 120 BPM. The original is available at
+adrianberenguer.bandcamp.com/track/grey-shadow, it has been used in accordance
+with its CC BY-NC-SA license, see
+creativecommons.org/licenses/by-nc-sa/3.0/. As per the conditions of the
+license, this video is licensed under the same terms.
+
+The aerial imagery is courtesy of Google Maps. It has been downloaded with
+ærialbot, see github.com/doersino/aerialbot, then cropped using Crop Cricles,
+see github.com/doersino/cropcircles, and finally assembled into a video using
+custom MoviePy-based tooling available at
+github.com/doersino/cpi-video-creation. The title screen background is the
+average of all images shown.
+
+The typeface used for the title screen, the coordinates of each field, and the
+link in the bottom left here is Optician Sans, see optician-sans.com. This
+colophon is set in Source Serif Pro, see
+github.com/adobe-fonts/source-serif-pro. Both typefaces are licensed under the
+SIL Open Font License, see opensource.org/licenses/OFL-1.1. Any kerning issues
+you may have noticed are caused by the video production process, the typefaces
+themselves are fine.
+"""
+LICENSE = ["by", "nc", "sa"]  # set to None for no license icons
+ENDCARD_DURATION = 20
+
+# all *.jpg files from this dir will be shown in the result video
+IMAGES_DIR = "/Users/noah/Downloads/prologue"
+IMAGES_LIMIT = None  # handy for testing, set to None otherwise
+
+VIDEO_WIDTH = 3840 / 2
+VIDEO_HEIGHT = VIDEO_WIDTH / 2.33  # should be based on aspect ratio of inputs
+
+MUSIC_FILE = "/Users/noah/Desktop/continent.wav"
+BPM = 120
+TIME_BEFORE_FIRST_BEAT = 0.62
+
+VIDEO_PATH = "result.mp4"
+FPS = 30
+
+THUMBNAIL_WIDTH = 1920
+THUMBNAIL_HEIGHT = 1080
+THUMBNAIL_PATH = "result-thumbnail.jpg"
+
+'''
 NO = "002"
 LOCATION = "Box Elder County"
 LOCATION_SUBTITLE = "Utah, USA"
@@ -55,11 +110,13 @@ FPS = 30
 THUMBNAIL_WIDTH = 1920
 THUMBNAIL_HEIGHT = 1080
 THUMBNAIL_PATH = "result-thumbnail.jpg"
+'''
 
 ################################################################################
 
 import glob
 import math
+import os
 import re
 import subprocess
 
@@ -106,14 +163,20 @@ def compute_static_clips_size(clips):
             size[1] = y
     return tuple(size)
 
-def trim_text_clip(clip):
+def trim_text_clip(clip, width=None, align='west'):
     """Trims a clip, i.e. removes all transparent pixels from the edges."""
 
     f = "temp/trim_text_clip_tmp.png"
     f_result = "temp/trim_text_clip_tmp_result.png"
+    f_result_padded = "temp/trim_text_clip_tmp_result_padded.png"
     clip.save_frame(f)
     subprocess.run([MAGICK, f, "-trim", f_result])
-    return ImageClip(f_result)
+    clip_result = ImageClip(f_result)
+    if width:
+        extent = f"{width}x{clip_result.size[1]}"
+        subprocess.run([MAGICK, f_result, "-background", "transparent", "-gravity", align, "-extent", extent, f_result_padded])
+        clip_result = ImageClip(f_result_padded)
+    return clip_result
 
 def normalize_image_clip(clip):
     """
@@ -185,8 +248,7 @@ def generate_thumbnail(background, logo, title):
     thumb_aspect = THUMBNAIL_WIDTH / THUMBNAIL_HEIGHT
 
     thumbnail = None
-    # TODO check if these work for all situations
-    if (vid_aspect > thumb_aspect):  # video wider
+    if vid_aspect > thumb_aspect:  # video wider
         height_factor = VIDEO_HEIGHT / THUMBNAIL_HEIGHT
         thumbnail = background.crop(
             x1=VIDEO_WIDTH/2-height_factor*THUMBNAIL_WIDTH/2,
@@ -202,6 +264,7 @@ def generate_thumbnail(background, logo, title):
     # positioning is the same as for the title card, so nothing needs to be done here
 
     thumbnail = CompositeVideoClip([thumbnail, logo, title])
+
     thumbnail = thumbnail.resize((THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT))
     thumbnail.save_frame(THUMBNAIL_PATH, withmask=False)
 
@@ -226,9 +289,10 @@ def fancy(lat, lon):
 
     return f"{lat} {lon}"
 
+"""
 def overlay_geocoords_if_available(filename, imageclip):
     coords = re.search(r'(-?\d+.\d+),(-?\d+.\d+)', filename)
-    if (not coords):
+    if not coords:
         return imageclip
     coords = [float(coords.group(1)), float(coords.group(2))]
 
@@ -246,25 +310,83 @@ def overlay_geocoords_if_available(filename, imageclip):
     coords = coords.set_duration(60/BPM)  # same as images
 
     return CompositeVideoClip([imageclip, coords])
+"""
+
+# the variant above leads to what appears to be a memory leak – it seems as
+# though CompositeVideoClip([imageclip, coords]) needs to load the image into
+# memory and keep it there until the video has been rendered instead of doing
+# things in a streaming manner. the fix is to instead make a concatenated clip
+# of overlays with the same timing as the images, then composite that on top of
+# a concatenation of the images. yes, that's basically the same, just stupider
+# – with the notable advantage that it doesn't gobble up ram like there's no
+# tomorrow. additionally, you might wonder why the text is set to "not actually
+# visible" and then hidden via .set_opacity(0) if there are no coords – it would
+# be easier to just return a tiny empty image or something, but the resulting
+# size difference would confudse concatenate_videoclips() to no end.
+# tl;dr: computers were a mistake and my life has been cut noticeably shorter by
+# all of this nonsense
+def generate_geocoords_overlay_if_available(filename):
+    coords_font_size = BASE_FONT_SIZE * 0.4
+
+    coords = re.search(r'(-?\d+.\d+),(-?\d+.\d+)', filename)
+    text = "not actually visible"
+    if coords:
+        text = fancy(float(coords.group(1)), float(coords.group(2)))
+
+    coords_clip = TextClip(
+        text,
+        fontsize=coords_font_size,
+        color='white',
+        font='OpticianSans',
+        align='east'
+        )
+
+    # trim, but make it right-aligned in the process (VIDEO_WIDTH/2 is a safe
+    # upper bound of the maximum width the text can possibly have)
+    coords_clip = trim_text_clip(coords_clip, width=VIDEO_WIDTH/2, align='east')
+    coords_clip = coords_clip.set_duration(60/BPM)  # same as images
+
+    if not coords:
+        coords_clip = coords_clip.set_opacity(0)
+
+    return coords_clip
 
 ################################################################################
 
 black = ColorClip((VIDEO_WIDTH,VIDEO_HEIGHT), color=(0, 0, 0))
 
-status("Loading images...")
+status("Finding images...")
 cpi_field_images = glob.glob(IMAGES_DIR + "/*.jpg")
 cpi_field_images.sort()  # gotta make sure they're sorted
 if IMAGES_LIMIT:
     cpi_field_images = cpi_field_images[:IMAGES_LIMIT]
 
+"""
+# not required: moviepy resizes without using much ram, after all
+status("Resizing images...")
+cpi_field_images_resized = []
+os.mkdir("temp/images/")
+for i, f in enumerate(cpi_field_images):
+    print(f"{i+1}/{len(cpi_field_images)}: " + os.path.basename(f))
+    f_result = "temp/images/" + os.path.basename(f)
+    # could actually skip conversion if a file with that name, filesize and maybe resolution already exists
+    subprocess.run([MAGICK, f, "-resize", str(VIDEO_WIDTH) + "x" + str(VIDEO_HEIGHT) + "!", "-quality", "95%", f_result])
+    cpi_field_images_resized.append(f_result)
+cpi_field_images = cpi_field_images_resized
+"""
+
+status("Loading images...")
 cpi_field_clips = []
 for i, f in enumerate(cpi_field_images):
-    print(f"{i}/{len(cpi_field_images)}: " + f)
+    print(f"{i+1}/{len(cpi_field_images)}: " + os.path.basename(f))
+    #clip = ImageClip(f).set_duration(60 / BPM)
     clip = ImageClip(f).set_duration(60 / BPM).resize((VIDEO_WIDTH, VIDEO_HEIGHT))
     cpi_field_clips.append(clip)
 
-status("Computing average image...")
+status("Turning them into a video sequence...")
 cpi_fields = concatenate_videoclips(cpi_field_clips)
+
+status("Computing average image...")
 fields_per_second = BPM / 60
 nframes = cpi_fields.duration*fields_per_second # total number of frames used
 total_image = sum(cpi_fields.iter_frames(fields_per_second, dtype=float, logger='bar'))
@@ -306,19 +428,20 @@ titles = titles.fadein(1).fadeout(1)
 
 ################################################################################
 
-status("Overlaying geo coordinates over images...")
-fields = []
-for i, (f, clip) in enumerate(zip(cpi_field_images, cpi_field_clips)):
-    print(f"{i}/{len(cpi_field_images)}: " + f)
-    fields.append(overlay_geocoords_if_available(f, clip))
-last_image = fields[-1]
-
-status("Concatenating images, thus creating video...")
-fields = concatenate_videoclips(fields)
-fields = concatenate_videoclips([black.set_duration(TIME_BEFORE_FIRST_BEAT), fields])
+status("Overlaying geo coordinates over image sequence...")
+overlays = []
+for i, f in enumerate(cpi_field_images):
+    print(f"{i+1}/{len(cpi_field_images)}: " + os.path.basename(f))
+    overlays.append(generate_geocoords_overlay_if_available(f))
+overlays = concatenate_videoclips(overlays)
+overlays = overlays.set_position((VIDEO_WIDTH-MARGIN-overlays.size[0],
+                                  VIDEO_HEIGHT-MARGIN-overlays.size[1]))
+fields = CompositeVideoClip([cpi_fields, overlays])
 
 # keep the last image on screen for a bit longer, then fade it out
-last_image = concatenate_videoclips([last_image for i in range(10)]).set_duration(1.5).fadeout(1.5)
+fields = fields.fx(vfx.freeze, t='end', freeze_duration=1.5, padding_end=0.1).fadeout(1.5)
+
+fields = concatenate_videoclips([black.set_duration(TIME_BEFORE_FIRST_BEAT), fields])
 
 status("Loading and incorporating music...")
 song = AudioFileClip(MUSIC_FILE)
@@ -362,7 +485,7 @@ link = TextClip(
     fontsize=end_font_size*1.5,
     color='white',
     font='OpticianSans',
-    align='west'
+    align='east'
     )
 link = trim_text_clip(link)
 link = link.set_position((VIDEO_WIDTH-MARGIN-link.size[0],
@@ -388,7 +511,7 @@ if LICENSE:
 status("Drawing end card...")
 endcard = [
     black,
-    average_image.set_opacity(0.2),
+    average_image.fx(vfx.blackwhite).set_opacity(0.2),
     logo.set_position((MARGIN,MARGIN)),
     intro,
     text,
@@ -406,7 +529,6 @@ video = concatenate_videoclips([
     titles,
     black.set_duration(1 - TIME_BEFORE_FIRST_BEAT if TIME_BEFORE_FIRST_BEAT < 1 else 0),
     fields,
-    last_image,
     black.set_duration(1),
     endcard,
     black.set_duration(1)
