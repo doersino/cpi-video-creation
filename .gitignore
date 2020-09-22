@@ -134,5 +134,5 @@ bin/
 pyvenv.cfg
 
 temp/*
-result.mp4
-result-thumbnail.png
+*.mp4
+*-thumbnail.jpg

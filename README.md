@@ -1,10 +1,10 @@
 # cpi-video-creation
 
-A quickly-thrown-together tool for making videos like [this one](TODO), intended for use with aerial imagery downloaded by [ærialbot](https://github.com/doersino/aerialbot) and cropped using [Crop Circles](https://github.com/doersino/cropcircles).
+A quickly-thrown-together tool for making [videos like this one](TODO), intended for use with aerial imagery downloaded by [ærialbot](https://github.com/doersino/aerialbot) and cropped using [Crop Circles](https://github.com/doersino/cropcircles).
 
 *This repository is probably not very interesting to you unless you're planning on using [MoviePy](https://zulko.github.io/moviepy/) yourself and are looking for an example project before you dive in.*
 
-Each video created by this tool consists of three segments: a title card, a sequence of images (the average of which is used as the title card background) with a soundtrack, and an end card with further information.
+Each video created by this tool consists of three segments – a *title card*, a *sequence of images* (the average of which is used as the title card background) with a soundtrack, and an *end card* with further information:
 
 ![](assets/examples/1.jpg)
 
@@ -35,20 +35,20 @@ $ convert -list font
 At the top of the output of that command is the path of the font list – on my system, as of September 2020, that's `/usr/local/Cellar/imagemagick/7.0.10-28/etc/ImageMagick-7/type-apple.xml`. (Supposedly, ImageMagick will instead use `~/.magick/type.xml` if that exists, but it just kinda doesn't. ¯\\\_(ツ)\_/¯) You will need to edit that file and add an entry for each of the two typefaces this tool uses, with whatever paths are correct on your system. The following Works On My Machine™:
 
 ```xml
-  <type
-     format="otf"
-     name="OpticianSans"
-     fullname="OpticianSans"
-     family="OpticianSans"
-     glyphs="/Users/noah/Library/Fonts/Optician-Sans.otf"
-     />
-  <type
-     format="ttf"
-     name="SourceSerifPro"
-     fullname="SourceSerifPro"
-     family="SourceSerifPro"
-     glyphs="/Users/noah/Library/Fonts/SourceSerifPro-Regular.ttf"
-     />
+<type
+    format="otf"
+    name="OpticianSans"
+    fullname="OpticianSans"
+    family="OpticianSans"
+    glyphs="/Users/noah/Library/Fonts/Optician-Sans.otf"
+    />
+<type
+    format="ttf"
+    name="SourceSerifPro"
+    fullname="SourceSerifPro"
+    family="SourceSerifPro"
+    glyphs="/Users/noah/Library/Fonts/SourceSerifPro-Regular.ttf"
+    />
 ```
 
 You might need to repeat this process each time you update ImageMagick.
@@ -76,6 +76,8 @@ Open `cpi-video-creation.py` and modify the variables at the top of the file, th
 ```
 $ python3 cpi-video-creation.py
 ```
+
+(Yes, a config file would be more elegant, but that would imply stability, which I'm not willing to commit to – the kinds of videos I make with this tool could well evolve in future.)
 
 
 ## License

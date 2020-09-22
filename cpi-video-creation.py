@@ -5,12 +5,15 @@
 NO = "001"
 LOCATION = "Prologue"
 LOCATION_SUBTITLE = ""
-TITLECARD_DURATION = 5
+TITLE_KERNING = 0.33
+
+TITLECARD_DURATION = 5  # includes fadeinout
 
 ENDCARD_INTRO = """
-This has been a selection of {image_count} center pivot irrigation fields
-located around the world – there will be follow-up videos with a more regional
-focus, sometimes exhaustively covering all fields in an area. Stay tuned.
+This has been a selection of 94 center pivot irrigation fields located around
+the world – there will be a number of follow-up videos, most with a more
+regional focus, sometimes exhaustively covering all fields in an area. Stay
+tuned.
 """
 ENDCARD_REST = """
 The soundtrack was a variant of "Continent" by Adrián Berenguer, slowed down
@@ -36,31 +39,36 @@ you may have noticed are caused by the video production process, the typefaces
 themselves are fine.
 """
 LICENSE = ["by", "nc", "sa"]  # set to None for no license icons
-ENDCARD_DURATION = 20
+ENDCARD_DURATION = 20  # includes fadeinout
 
 # all *.jpg files from this dir will be shown in the result video
-IMAGES_DIR = "/Users/noah/Downloads/prologue"
+IMAGES_DIR = "/Users/noah/Downloads/prologue2"
 IMAGES_LIMIT = None  # handy for testing, set to None otherwise
 
-VIDEO_WIDTH = 3840 / 2
+VIDEO_WIDTH = 3840
 VIDEO_HEIGHT = VIDEO_WIDTH / 2.33  # should be based on aspect ratio of inputs
 
 MUSIC_FILE = "/Users/noah/Desktop/continent.wav"
-BPM = 120
-TIME_BEFORE_FIRST_BEAT = 0.62
+BPM = 120 * 2
+TIME_BEFORE_FIRST_BEAT = 0.62  # screen will be black until that time
 
-VIDEO_PATH = "result.mp4"
+LAST_IMAGE_ADDITIONAL_DURATION = 0.5  # time the last image will be shown (on top of the normal time), sometimes best set to 0
+LAST_IMAGE_FADEOUT_DURATION = 2.0  # a good default is 1.5
+
+VIDEO_PATH = "001-prologue.mp4"
 FPS = 30
 
 THUMBNAIL_WIDTH = 1920
 THUMBNAIL_HEIGHT = 1080
-THUMBNAIL_PATH = "result-thumbnail.jpg"
+THUMBNAIL_PATH = "001-prologue-thumbnail.jpg"
 
 '''
 NO = "002"
 LOCATION = "Box Elder County"
 LOCATION_SUBTITLE = "Utah, USA"
-TITLECARD_DURATION = 5
+TITLE_KERNING = 0
+
+TITLECARD_DURATION = 5  # includes fadeinout
 
 ENDCARD_INTRO = """
 That's all {image_count} center pivot irrigation fields located in Box Elder
@@ -97,19 +105,22 @@ ENDCARD_DURATION = 20
 IMAGES_DIR = "/Users/noah/Downloads/box-elder-county"
 IMAGES_LIMIT = None  # handy for testing, set to None otherwise
 
-VIDEO_WIDTH = 3840 / 2
+VIDEO_WIDTH = 3840
 VIDEO_HEIGHT = VIDEO_WIDTH / 2.33  # should be based on aspect ratio of inputs
 
 MUSIC_FILE = "/Users/noah/Desktop/greyshadow.wav"
 BPM = 100
-TIME_BEFORE_FIRST_BEAT = 0.85
+TIME_BEFORE_FIRST_BEAT = 0.85  # screen will be black until that time
 
-VIDEO_PATH = "result.mp4"
+LAST_IMAGE_ADDITIONAL_DURATION = 0.2  # time the last image will be shown (on top of the normal time), sometimes best set to 0
+LAST_IMAGE_FADEOUT_DURATION = 1.5  # a good default is 1.5
+
+VIDEO_PATH = "002-box-elder-county.mp4"
 FPS = 30
 
 THUMBNAIL_WIDTH = 1920
 THUMBNAIL_HEIGHT = 1080
-THUMBNAIL_PATH = "result-thumbnail.jpg"
+THUMBNAIL_PATH = "002-box-elder-county-thumbnail.jpg"
 '''
 
 ################################################################################
@@ -191,7 +202,7 @@ def normalize_image_clip(clip):
     return ImageClip(f_result)
 
 def draw_logo(no):
-    logo_font_size = BASE_FONT_SIZE * 1.3
+    logo_font_size = BASE_FONT_SIZE * 1.35
     cpi = TextClip(
         "Center\nPivot\nIrrigation",
         fontsize=logo_font_size,
@@ -215,14 +226,15 @@ def draw_logo(no):
     return trim_text_clip(logo)
 
 def draw_title(main, sub):
-    title_font_size = BASE_FONT_SIZE * 2.3
+    title_font_size = BASE_FONT_SIZE * 2.4
     main = TextClip(
         main,
         fontsize=title_font_size,
         color='white',
         font='OpticianSans',
         align='center',
-        interline=-title_font_size*0.2
+        interline=-title_font_size*0.2,
+        kerning=TITLE_KERNING*title_font_size
         )
     main = trim_text_clip(main)
     title = [main]
@@ -233,7 +245,8 @@ def draw_title(main, sub):
             fontsize=title_font_size*(2/3),
             color='white',
             font='OpticianSans',
-            align='center'
+            align='center',
+            kerning=TITLE_KERNING*title_font_size
             )
         sub = trim_text_clip(sub)
         sub = sub.set_position((main.size[0]/2-sub.size[0]/2,
@@ -439,7 +452,12 @@ overlays = overlays.set_position((VIDEO_WIDTH-MARGIN-overlays.size[0],
 fields = CompositeVideoClip([cpi_fields, overlays])
 
 # keep the last image on screen for a bit longer, then fade it out
-fields = fields.fx(vfx.freeze, t='end', freeze_duration=1.5, padding_end=0.1).fadeout(1.5)
+fields = fields.fx(
+    vfx.freeze,
+    t='end',
+    freeze_duration=LAST_IMAGE_ADDITIONAL_DURATION+LAST_IMAGE_FADEOUT_DURATION,
+    padding_end=0.1)
+fields = fields.fadeout(LAST_IMAGE_FADEOUT_DURATION)
 
 fields = concatenate_videoclips([black.set_duration(TIME_BEFORE_FIRST_BEAT), fields])
 
