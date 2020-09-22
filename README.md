@@ -89,3 +89,35 @@ However, the subdirectory `assets/fonts/` contains third-party fonts licensed un
 Further, the subdirectory `assets/cc/` contains Creative Commons License icons, which appear to be licensed under the *Attribution 4.0 International License*, see [here](https://creativecommons.org/licenses/by/4.0/).
 
 Finally, the two files `assets/beep.wav` and `assets/boop.wav` are recordings of my phone being bumped against my stove's power knobs. Since it took literally seconds to create them, you may use them as you like.
+
+
+---
+
+This last section is just a reminder to myself.
+
+
+### Soundtrack editing checklist
+
+* [ ] Only use CC-licensed music, say, off Bandcamp.
+* [ ] Use https://getsongbpm.com/tools/audio to get an estimate of the BPM if it's not obvious – Audacity's built-in tooling is not great in this area.
+* [ ] In Audacity, add labels via "Analyze > Regular Interval Labels...", move them around to make their beginning coincide with the first beat.
+* [ ] Can adjust the tempo of the soundtrack via "Effect > Change Tempo...", where the old BPM can be set for reference.
+* [ ] Can usually clone sections of audio with widths that are multiples of 8 with regard to beat labels in order to boost the soundtrack length.
+
+
+### Video rendering checklist
+
+* [ ] Verify that the "#00X" number in the video is correct.
+* [ ] Verifly that the soundtrack is attributed correctly and the license icons are set accordingly.
+* [ ] Make sure there are no typos.
+* [ ] Set width to 4K, i.e. 3840.
+* [ ] Keep tabs on RAM use if the video is longer than 4 minutes.
+
+
+### Video uploading checklist
+
+* [ ] Set title like "Center Pivot Irrigation #00X — Location, Location Subtitle".
+* [ ] For video description, take end card texts, remove extra line breaks, and add "https://" in front of every URL.
+* [ ] Set location to whatever location is appropriate.
+* [ ] Set category to "Science & Technology".
+* [ ] Keep visiblity as "Private" at least until the HD/4K version has finished processing.
