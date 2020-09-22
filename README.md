@@ -117,7 +117,9 @@ This last section is just a reminder to myself.
 ### Video uploading checklist
 
 * [ ] Set title like "Center Pivot Irrigation #00X — Location, Location Subtitle".
-* [ ] For video description, take end card texts, remove extra line breaks, and add "https://" in front of every URL.
+* [ ] For video description, take end card texts, remove extra line breaks, make sure to replace `{image_count}` with the value shown in the video, and add "https://" in front of every URL.
+* [ ] Add to playlist "Center Pivot Irrigation".
+* [ ] In "Audience", check "No, it's not made for kids".
 * [ ] Set location to whatever location is appropriate.
 * [ ] Set category to "Science & Technology".
 * [ ] Keep visiblity as "Private" at least until the HD/4K version has finished processing.
