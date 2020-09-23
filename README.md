@@ -1,6 +1,6 @@
 # cpi-video-creation
 
-A quickly-thrown-together tool for making [videos like this one](TODO), intended for use with aerial imagery downloaded by [ærialbot](https://github.com/doersino/aerialbot) and cropped using [Crop Circles](https://github.com/doersino/cropcircles).
+A quickly-thrown-together tool for making [videos like this one](https://www.youtube.com/watch?v=e6dB6rXYlXo), intended for use with aerial imagery downloaded by [ærialbot](https://github.com/doersino/aerialbot) and cropped using [Crop Circles](https://github.com/doersino/cropcircles).
 
 *This repository is probably not very interesting to you unless you're planning on using [MoviePy](https://zulko.github.io/moviepy/) yourself and are looking for an example project before you dive in.*
 
@@ -116,7 +116,7 @@ This last section is just a reminder to myself.
 
 ### Video uploading checklist
 
-* [ ] Set title like "Center Pivot Irrigation #00X — Location, Location Subtitle".
+* [ ] Set title like "Center Pivot Irrigation #00X — Location, Location Subtitle" (that's an em dash, type <kbd>alt</kbd> <kbd>shift</kbd> <kbd>-</kbd>).
 * [ ] For video description, take end card texts, remove extra line breaks, make sure to replace `{image_count}` with the value shown in the video, and add "https://" in front of every URL.
 * [ ] Add to playlist "Center Pivot Irrigation".
 * [ ] In "Audience", check "No, it's not made for kids".
