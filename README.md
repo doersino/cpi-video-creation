@@ -1,6 +1,6 @@
 # cpi-video-creation
 
-A quickly-thrown-together tool for making [videos like this one](https://www.youtube.com/watch?v=e6dB6rXYlXo), intended for use with aerial imagery downloaded by [ærialbot](https://github.com/doersino/aerialbot) and cropped using [Crop Circles](https://github.com/doersino/cropcircles).
+A quickly-thrown-together tool for making a [series of videos](https://www.youtube.com/playlist?list=PLTphPoE54a1s_ZdCkGwbhQO9O5SMSitA1), intended for use with aerial imagery downloaded by [ærialbot](https://github.com/doersino/aerialbot) and cropped using [Crop Circles](https://github.com/doersino/cropcircles).
 
 *This repository is probably not very interesting to you unless you're planning on using [MoviePy](https://zulko.github.io/moviepy/) yourself and are looking for an example project before you dive in.*
 
@@ -108,10 +108,10 @@ This last section is just a reminder to myself.
 ### Video rendering checklist
 
 * [ ] Verify that the "#00X" number in the video is correct.
-* [ ] Verifly that the soundtrack is attributed correctly and the license icons are set accordingly.
-* [ ] Make sure there are no typos.
+* [ ] Verify that the soundtrack is attributed correctly and the license icons are configured accordingly.
+* [ ] Make sure there are no typos in the end card text.
 * [ ] Set width to 4K, i.e. 3840.
-* [ ] Keep tabs on RAM use if the video is longer than 4 minutes.
+* [ ] Keep tabs on RAM usage if the video is longer than 4 minutes.
 
 
 ### Video uploading checklist
