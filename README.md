@@ -4,7 +4,7 @@ A quickly-thrown-together tool for making a [series of videos](https://www.youtu
 
 *This repository is probably not very interesting to you unless you're planning on using [MoviePy](https://zulko.github.io/moviepy/) yourself and are looking for an example project before you dive in.*
 
-Each video created by this tool consists of three segments – a *title card*, a *sequence of images* (the average of which is used as the title card background) with a soundtrack, and an *end card* with further information:
+Each video created by this tool consists of three segments – a *title card* (a *thumbnail* that's based on it is also emitted), a *sequence of images* (the average of which is used as the title card background) with a soundtrack, and an *end card* with further information:
 
 ![](assets/examples/1.jpg)
 
