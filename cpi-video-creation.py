@@ -125,7 +125,7 @@ THUMBNAIL_HEIGHT = 1080
 THUMBNAIL_PATH = "002-box-elder-county-thumbnail.jpg"
 '''
 
-
+'''
 NO = "003"
 LOCATION = "Selwyn District"
 LOCATION_SUBTITLE = "Canterbury, New Zealand"  # must render narrower than the main location; you can make the location wider by adjusting the kerning
@@ -185,6 +185,66 @@ FPS = 30
 THUMBNAIL_WIDTH = 1920
 THUMBNAIL_HEIGHT = 1080
 THUMBNAIL_PATH = NO + "-selwyn-district-thumbnail.jpg"
+'''
+
+NO = "004"
+LOCATION = "San Juan County"
+LOCATION_SUBTITLE = "New Mexico, USA"  # must render narrower than the main location; you can make the location wider by adjusting the kerning
+LOCATION_KERNING = 0
+
+TITLECARD_DURATION = 5  # includes fadeinout
+
+ENDCARD_INTRO = """
+That's all {image_count} center pivot irrigation fields located in San Juan
+County, New Mexico, USA — at least the ones that were visible from space at the
+time the aerial imagery was captured.
+"""
+ENDCARD_REST = """
+The soundtrack was a variant of "Explore, be curious" by Cloudkicker that's been
+cut apart and reassembled to match the length of this video. The original is
+available at cloudkicker.bandcamp.com/track/explore-be-curious, it has been used
+in accordance with its CC BY license, see creativecommons.org/licenses/by/3.0/.
+This video is also licensed under a CC license, specifically the slightly more
+restrictive CC BY-NC-SA license, see creativecommons.org/licenses/by-nc-sa/3.0/.
+
+The aerial imagery is courtesy of Google Maps. It has been downloaded with
+ærialbot, see github.com/doersino/aerialbot, then cropped using Crop Circles,
+see github.com/doersino/cropcircles, and finally assembled into a video using
+custom MoviePy-based tooling available at
+github.com/doersino/cpi-video-creation. The title screen background is the
+average of all images shown.
+
+The typeface used for the title screen, the coordinates of each field, and the
+link in the bottom left here is Optician Sans, see optician-sans.com. This
+colophon is set in Source Serif Pro, see
+github.com/adobe-fonts/source-serif-pro. Both typefaces are licensed under the
+SIL Open Font License, see opensource.org/licenses/OFL-1.1. Any kerning issues
+you may have noticed are caused by the video production process, the typefaces
+themselves are fine.
+"""
+LICENSE = ["by", "nc", "sa"]  # set to None for no license icons
+ENDCARD_DURATION = 20  # includes fadeinout
+
+# all *.jpg files from this dir will be shown in the result video
+IMAGES_DIR = "/Users/noah/Documents/cpi-video-stuff/004-san-juan-county/sequence"
+IMAGES_LIMIT = None  # handy for testing, set to None otherwise
+
+VIDEO_WIDTH = 3840
+VIDEO_HEIGHT = VIDEO_WIDTH / 2.33  # should be based on aspect ratio of inputs
+
+MUSIC_FILE = "/Users/noah/Documents/cpi-video-stuff/004-san-juan-county/soundtrack/explorebecurious.wav"
+BPM = 138
+TIME_BEFORE_FIRST_BEAT = 0.28  # screen will be black until that time
+
+LAST_IMAGE_ADDITIONAL_DURATION = 0.3  # time the last image will be shown (on top of the normal time), sometimes best set to 0
+LAST_IMAGE_FADEOUT_DURATION = 1.5  # a good default is 1.5
+
+VIDEO_PATH = NO + "-san-juan-county.mp4"
+FPS = 30
+
+THUMBNAIL_WIDTH = 1920
+THUMBNAIL_HEIGHT = 1080
+THUMBNAIL_PATH = NO + "-san-juan-county-thumbnail.jpg"
 
 
 ################################################################################

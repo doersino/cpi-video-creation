@@ -111,7 +111,7 @@ This last section is just a reminder to myself.
 * [ ] Verify that the soundtrack is attributed correctly and the license icons are configured accordingly.
 * [ ] Make sure there are no typos in the end card text.
 * [ ] Set width to 4K, i.e. 3840.
-* [ ] Keep tabs on RAM usage if the video is longer than 4 minutes.
+* [ ] Keep tabs on RAM usage if the video is longer than 4 minutes or features more than 300 images.
 
 
 ### Video uploading checklist
