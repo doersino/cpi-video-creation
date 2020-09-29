@@ -341,7 +341,9 @@ def overlay_geocoords_if_available(filename, imageclip):
 def generate_geocoords_overlay_if_available(filename):
     coords_font_size = BASE_FONT_SIZE * 0.4
 
-    coords = re.search(r'(-?\d+.\d+),(-?\d+.\d+)', filename)
+    # the leading "-?" prevents things like the dash in
+    # "cropcircles-[lat],[lon]" from flipping everything south
+    coords = re.search(r'-?(-?\d+.\d+),(-?\d+.\d+)', filename)
     text = "not actually visible"
     if coords:
         text = fancy(float(coords.group(1)), float(coords.group(2)))
