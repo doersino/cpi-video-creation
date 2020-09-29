@@ -2,10 +2,11 @@
 # CONFIG #
 ##########
 
+'''
 NO = "001"
 LOCATION = "Prologue"
 LOCATION_SUBTITLE = ""
-TITLE_KERNING = 0.33
+LOCATION_KERNING = 0.33
 
 TITLECARD_DURATION = 5  # includes fadeinout
 
@@ -24,7 +25,7 @@ creativecommons.org/licenses/by-nc-sa/3.0/. As per the conditions of the
 license, this video is licensed under the same terms.
 
 The aerial imagery is courtesy of Google Maps. It has been downloaded with
-ærialbot, see github.com/doersino/aerialbot, then cropped using Crop Cricles,
+ærialbot, see github.com/doersino/aerialbot, then cropped using Crop Circles,
 see github.com/doersino/cropcircles, and finally assembled into a video using
 custom MoviePy-based tooling available at
 github.com/doersino/cpi-video-creation. The title screen background is the
@@ -42,13 +43,13 @@ LICENSE = ["by", "nc", "sa"]  # set to None for no license icons
 ENDCARD_DURATION = 20  # includes fadeinout
 
 # all *.jpg files from this dir will be shown in the result video
-IMAGES_DIR = "/Users/noah/Downloads/prologue2"
+IMAGES_DIR = "/Users/noah/Documents/cpi-video-stuff/001-prologue/sequence"
 IMAGES_LIMIT = None  # handy for testing, set to None otherwise
 
 VIDEO_WIDTH = 3840
 VIDEO_HEIGHT = VIDEO_WIDTH / 2.33  # should be based on aspect ratio of inputs
 
-MUSIC_FILE = "/Users/noah/Desktop/continent.wav"
+MUSIC_FILE = "/Users/noah/Documents/cpi-video-stuff/001-prologue/soundtrack/continent.wav"
 BPM = 120 * 2
 TIME_BEFORE_FIRST_BEAT = 0.62  # screen will be black until that time
 
@@ -61,12 +62,13 @@ FPS = 30
 THUMBNAIL_WIDTH = 1920
 THUMBNAIL_HEIGHT = 1080
 THUMBNAIL_PATH = "001-prologue-thumbnail.jpg"
+'''
 
 '''
 NO = "002"
 LOCATION = "Box Elder County"
 LOCATION_SUBTITLE = "Utah, USA"
-TITLE_KERNING = 0
+LOCATION_KERNING = 0
 
 TITLECARD_DURATION = 5  # includes fadeinout
 
@@ -84,7 +86,7 @@ creativecommons.org/licenses/by-nc-sa/3.0/. As per the conditions of the
 license, this video is licensed under the same terms.
 
 The aerial imagery is courtesy of Google Maps. It has been downloaded with
-ærialbot, see github.com/doersino/aerialbot, then cropped using Crop Cricles,
+ærialbot, see github.com/doersino/aerialbot, then cropped using Crop Circles,
 see github.com/doersino/cropcircles, and finally assembled into a video using
 custom MoviePy-based tooling available at
 github.com/doersino/cpi-video-creation. The title screen background is the
@@ -102,13 +104,13 @@ LICENSE = ["by", "nc", "sa"]  # set to None for no license icons
 ENDCARD_DURATION = 20
 
 # all *.jpg files from this dir will be shown in the result video
-IMAGES_DIR = "/Users/noah/Downloads/box-elder-county"
+IMAGES_DIR = "/Users/noah/Documents/cpi-video-stuff/002-box-elder-county/sequence"
 IMAGES_LIMIT = None  # handy for testing, set to None otherwise
 
 VIDEO_WIDTH = 3840
 VIDEO_HEIGHT = VIDEO_WIDTH / 2.33  # should be based on aspect ratio of inputs
 
-MUSIC_FILE = "/Users/noah/Desktop/greyshadow.wav"
+MUSIC_FILE = "/Users/noah/Documents/cpi-video-stuff/002-box-elder-county/soundtrack/greyshadow.wav"
 BPM = 100
 TIME_BEFORE_FIRST_BEAT = 0.85  # screen will be black until that time
 
@@ -122,6 +124,68 @@ THUMBNAIL_WIDTH = 1920
 THUMBNAIL_HEIGHT = 1080
 THUMBNAIL_PATH = "002-box-elder-county-thumbnail.jpg"
 '''
+
+
+NO = "003"
+LOCATION = "Selwyn District"
+LOCATION_SUBTITLE = "Canterbury, New Zealand"  # must render narrower than the main location; you can make the location wider by adjusting the kerning
+LOCATION_KERNING = 0.06
+
+TITLECARD_DURATION = 5  # includes fadeinout
+
+ENDCARD_INTRO = """
+This has been a selection of {image_count} center pivot irrigation fields
+located in Selwyn District, Canterbury, New Zealand — there are quite a bit
+more, but they aren't large enough to show up clearly in publicly available
+aerial imagery.
+"""
+ENDCARD_REST = """
+The soundtrack was a variant of "Continent" by Adrián Berenguer, shortened and
+slowed down from 149 to 110 BPM. The original is available at
+adrianberenguer.bandcamp.com/track/grey-shadow, it has been used in accordance
+with its CC BY-NC-SA license, see
+creativecommons.org/licenses/by-nc-sa/3.0/. As per the conditions of the
+license, this video is licensed under the same terms.
+
+The aerial imagery is courtesy of Google Maps. It has been downloaded with
+ærialbot, see github.com/doersino/aerialbot, then cropped using Crop Circles,
+see github.com/doersino/cropcircles, partially color-balanced using Adobe
+Photoshop CS6, and finally assembled into a video using custom MoviePy-based
+tooling available at github.com/doersino/cpi-video-creation. The title screen
+background is the average of all images shown.
+
+The typeface used for the title screen, the coordinates of each field, and the
+link in the bottom left here is Optician Sans, see optician-sans.com. This
+colophon is set in Source Serif Pro, see
+github.com/adobe-fonts/source-serif-pro. Both typefaces are licensed under the
+SIL Open Font License, see opensource.org/licenses/OFL-1.1. Any kerning issues
+you may have noticed are caused by the video production process, the typefaces
+themselves are fine.
+"""
+LICENSE = ["by", "nc", "sa"]  # set to None for no license icons
+ENDCARD_DURATION = 20  # includes fadeinout
+
+# all *.jpg files from this dir will be shown in the result video
+IMAGES_DIR = "/Users/noah/Documents/cpi-video-stuff/003-selwyn-district/sequence"
+IMAGES_LIMIT = None  # handy for testing, set to None otherwise
+
+VIDEO_WIDTH = 3840
+VIDEO_HEIGHT = VIDEO_WIDTH / 2.33  # should be based on aspect ratio of inputs
+
+MUSIC_FILE = "/Users/noah/Documents/cpi-video-stuff/003-selwyn-district/soundtrack/continent.wav"
+BPM = 110
+TIME_BEFORE_FIRST_BEAT = 0.35  # screen will be black until that time
+
+LAST_IMAGE_ADDITIONAL_DURATION = 0.3  # time the last image will be shown (on top of the normal time), sometimes best set to 0
+LAST_IMAGE_FADEOUT_DURATION = 1.5  # a good default is 1.5
+
+VIDEO_PATH = NO + "-selwyn-district.mp4"
+FPS = 30
+
+THUMBNAIL_WIDTH = 1920
+THUMBNAIL_HEIGHT = 1080
+THUMBNAIL_PATH = NO + "-selwyn-district-thumbnail.jpg"
+
 
 ################################################################################
 
@@ -234,7 +298,7 @@ def draw_title(main, sub):
         font='OpticianSans',
         align='center',
         interline=-title_font_size*0.2,
-        kerning=TITLE_KERNING*title_font_size
+        kerning=LOCATION_KERNING*title_font_size
         )
     main = trim_text_clip(main)
     title = [main]
@@ -245,8 +309,7 @@ def draw_title(main, sub):
             fontsize=title_font_size*(2/3),
             color='white',
             font='OpticianSans',
-            align='center',
-            kerning=TITLE_KERNING*title_font_size
+            align='center'
             )
         sub = trim_text_clip(sub)
         sub = sub.set_position((main.size[0]/2-sub.size[0]/2,
