@@ -209,7 +209,7 @@ def draw_logo(no):
         color='white',
         font='OpticianSans',
         align='west',
-        interline=-logo_font_size*0.3
+        interline=-logo_font_size*0.29
         )
     no = TextClip(
         "#" + no,
@@ -218,7 +218,7 @@ def draw_logo(no):
         font='OpticianSans',
         align='west'
         )
-    no = no.set_position((0, logo_font_size*1.87))
+    no = no.set_position((0, logo_font_size*1.84))
     no = no.set_opacity(0.87)
 
     logo = [cpi, no]
