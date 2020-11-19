@@ -122,4 +122,4 @@ This last section is just a reminder to myself.
 * [ ] In "Audience", check "No, it's not made for kids".
 * [ ] Set location to whatever location is appropriate.
 * [ ] Set category to "Science & Technology".
-* [ ] Keep visiblity as "Private" at least until the HD/4K version has finished processing.
+* [ ] Keep visibility as "Private" at least until the HD/4K version has finished processing.
